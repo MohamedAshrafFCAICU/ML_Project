@@ -2,6 +2,8 @@ import os
 from pathlib import Path
 
 def _detect_environment():
+    if os.environ.get('STREAMLIT_SHARING_MODE') or os.path.exists('/mount/src'):
+        return 'streamlit_cloud'
     if os.environ.get('RENDER'):
         return 'render'
     try:
@@ -16,7 +18,10 @@ def _detect_environment():
 ENVIRONMENT = _detect_environment()
 
 class Config:
-    if ENVIRONMENT == 'render':
+    if ENVIRONMENT == 'streamlit_cloud':
+        PROJECT_ROOT = Path('/mount/src/ml_project')
+        SAVE_ROOT = PROJECT_ROOT
+    elif ENVIRONMENT == 'render':
         PROJECT_ROOT = Path(__file__).parent.parent
         SAVE_ROOT = PROJECT_ROOT
     elif ENVIRONMENT == 'colab':
@@ -36,8 +41,9 @@ class Config:
     REPORTS_DIR = OUTPUT_DIR / "reports"
     PREDICTIONS_DIR = OUTPUT_DIR / "predictions"
     
-    for dir_path in [OUTPUT_DIR, MODELS_DIR, FIGURES_DIR, REPORTS_DIR, PREDICTIONS_DIR]:
-        dir_path.mkdir(parents=True, exist_ok=True)
+    if ENVIRONMENT not in ['streamlit_cloud', 'render']:
+        for dir_path in [OUTPUT_DIR, MODELS_DIR, FIGURES_DIR, REPORTS_DIR, PREDICTIONS_DIR]:
+            dir_path.mkdir(parents=True, exist_ok=True)
     
     IMG_SIZE = (224, 224)
     IMG_CHANNELS = 3
@@ -106,6 +112,5 @@ class Config:
 
 config = Config()
 
-if ENVIRONMENT != 'render':
-    print(f"Environment: {ENVIRONMENT.upper()}")
-    print(f"Project Root: {Config.PROJECT_ROOT}")
+print(f"Environment: {ENVIRONMENT}")
+print(f"Models Dir: {Config.MODELS_DIR}")
