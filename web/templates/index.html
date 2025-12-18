@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Waste Classification System</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>♻️ Waste Classification System</h1>
+            <p>Classify waste using AI - SVM & KNN with EfficientNet</p>
+        </header>
+
+        <!-- Model Selection -->
+        <div class="model-selector">
+            <label>Model:</label>
+            <button id="btn-svm" class="model-btn active" onclick="selectModel('svm')">SVM</button>
+            <button id="btn-knn" class="model-btn" onclick="selectModel('knn')">KNN</button>
+        </div>
+
+        <!-- Tab Navigation -->
+        <div class="tabs">
+            <button class="tab-btn active" onclick="showTab('camera')">📷 Live Camera</button>
+            <button class="tab-btn" onclick="showTab('image')">🖼️ Upload Image</button>
+            <button class="tab-btn" onclick="showTab('folder')">📁 Upload Folder</button>
+        </div>
+
+        <!-- Camera Tab -->
+        <div id="tab-camera" class="tab-content active">
+            <div class="camera-container">
+                <div class="video-wrapper">
+                    <video id="video" autoplay playsinline></video>
+                    <canvas id="canvas" style="display:none;"></canvas>
+                    <div id="camera-overlay" class="overlay">
+                        <span id="overlay-text">Click Start to begin</span>
+                    </div>
+                </div>
+                
+                <div class="camera-controls">
+                    <button id="btn-start" class="control-btn start" onclick="startCamera()">▶ Start</button>
+                    <button id="btn-pause" class="control-btn pause" onclick="togglePause()" disabled>⏸ Pause</button>
+                    <button id="btn-stop" class="control-btn stop" onclick="stopCamera()" disabled>⏹ Stop</button>
+                    <button id="btn-switch" class="control-btn switch" onclick="switchCamera()">🔄 Switch Camera</button>
+                    <button id="btn-screenshot" class="control-btn screenshot" onclick="takeScreenshot()" disabled>📸 Screenshot</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Image Upload Tab -->
+        <div id="tab-image" class="tab-content">
+            <div class="upload-area" id="drop-area">
+                <input type="file" id="image-input" accept="image/*" onchange="handleImageUpload(event)" hidden>
+                <div class="upload-content">
+                    <span class="upload-icon">🖼️</span>
+                    <p>Drag & drop an image here or</p>
+                    <button class="upload-btn" onclick="document.getElementById('image-input').click()">Browse Files</button>
+                </div>
+            </div>
+            <div id="image-preview-container" class="preview-container" style="display:none;">
+                <img id="image-preview" class="preview-image">
+                <button class="classify-btn" onclick="classifyUploadedImage()">🔍 Classify</button>
+            </div>
+        </div>
+
+        <!-- Folder Upload Tab -->
+        <div id="tab-folder" class="tab-content">
+            <div class="upload-area">
+                <input type="file" id="folder-input" webkitdirectory multiple onchange="handleFolderUpload(event)" hidden>
+                <div class="upload-content">
+                    <span class="upload-icon">📁</span>
+                    <p>Select a folder with images</p>
+                    <button class="upload-btn" onclick="document.getElementById('folder-input').click()">Select Folder</button>
+                </div>
+            </div>
+            <div id="folder-results" class="folder-results" style="display:none;">
+                <h3>Results (<span id="folder-count">0</span> images)</h3>
+                <div class="progress-bar">
+                    <div id="progress-fill" class="progress-fill"></div>
+                </div>
+                <div id="folder-table-container"></div>
+            </div>
+        </div>
+
+        <!-- Results Panel -->
+        <div id="results-panel" class="results-panel">
+            <div class="result-main">
+                <div id="result-class" class="result-class">-</div>
+                <div id="result-confidence" class="result-confidence">Confidence: -</div>
+            </div>
+            <div class="result-bars" id="result-bars">
+                <!-- Probability bars will be inserted here -->
+            </div>
+        </div>
+    </div>
+
+    <script src="/static/js/app.js"></script>
+</body>
+</html>
