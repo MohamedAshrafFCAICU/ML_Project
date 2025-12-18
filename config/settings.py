@@ -2,6 +2,8 @@ import os
 from pathlib import Path
 
 def _detect_environment():
+    if os.environ.get('SPACE_ID'):
+        return 'huggingface'
     if os.environ.get('STREAMLIT_SHARING_MODE') or os.path.exists('/mount/src'):
         return 'streamlit_cloud'
     if os.environ.get('RENDER'):
@@ -18,7 +20,10 @@ def _detect_environment():
 ENVIRONMENT = _detect_environment()
 
 class Config:
-    if ENVIRONMENT == 'streamlit_cloud':
+    if ENVIRONMENT == 'huggingface':
+        PROJECT_ROOT = Path('/app')
+        SAVE_ROOT = PROJECT_ROOT
+    elif ENVIRONMENT == 'streamlit_cloud':
         PROJECT_ROOT = Path('/mount/src/ml_project')
         SAVE_ROOT = PROJECT_ROOT
     elif ENVIRONMENT == 'render':
@@ -41,7 +46,7 @@ class Config:
     REPORTS_DIR = OUTPUT_DIR / "reports"
     PREDICTIONS_DIR = OUTPUT_DIR / "predictions"
     
-    if ENVIRONMENT not in ['streamlit_cloud', 'render']:
+    if ENVIRONMENT == 'local':
         for dir_path in [OUTPUT_DIR, MODELS_DIR, FIGURES_DIR, REPORTS_DIR, PREDICTIONS_DIR]:
             dir_path.mkdir(parents=True, exist_ok=True)
     

@@ -159,8 +159,9 @@ def get_classes():
 if __name__ == '__main__':
     print("\n" + "="*50)
     print("WASTE CLASSIFICATION WEB APP")
-    print("Open http://localhost:5000 in your browser")
     print("="*50 + "\n")
     
     init_classifier()
-    app.run(host='0.0.0.0', port=5000, debug=False, threaded=True)
+    
+    port = int(os.environ.get('PORT', 7860))
+    app.run(host='0.0.0.0', port=port, debug=False, threaded=True)
