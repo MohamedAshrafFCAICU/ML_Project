@@ -36,7 +36,7 @@ class Config:
         PROJECT_ROOT = Path("/kaggle/working/project")
         SAVE_ROOT = Path("/kaggle/working")
     else:
-        PROJECT_ROOT = Path("D:/ML_Project")
+        PROJECT_ROOT = Path(__file__).parent.parent
         SAVE_ROOT = PROJECT_ROOT
     
     DATA_DIR = PROJECT_ROOT / "dataset"

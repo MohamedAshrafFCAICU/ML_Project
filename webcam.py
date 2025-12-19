@@ -68,6 +68,33 @@ class WebcamClassifier:
     def draw_ui(self, frame, class_name, confidence, fps, paused):
         h, w = frame.shape[:2]
         
+        # Draw center ROI box for object placement
+        box_size = 200
+        cx, cy = w // 2, h // 2
+        x1, y1 = cx - box_size // 2, cy - box_size // 2
+        x2, y2 = cx + box_size // 2, cy + box_size // 2
+        
+        # Draw ROI box with corners
+        corner_len = 30
+        roi_color = (0, 255, 255)  # Yellow
+        thickness = 3
+        
+        # Top-left corner
+        cv2.line(frame, (x1, y1), (x1 + corner_len, y1), roi_color, thickness)
+        cv2.line(frame, (x1, y1), (x1, y1 + corner_len), roi_color, thickness)
+        # Top-right corner
+        cv2.line(frame, (x2, y1), (x2 - corner_len, y1), roi_color, thickness)
+        cv2.line(frame, (x2, y1), (x2, y1 + corner_len), roi_color, thickness)
+        # Bottom-left corner
+        cv2.line(frame, (x1, y2), (x1 + corner_len, y2), roi_color, thickness)
+        cv2.line(frame, (x1, y2), (x1, y2 - corner_len), roi_color, thickness)
+        # Bottom-right corner
+        cv2.line(frame, (x2, y2), (x2 - corner_len, y2), roi_color, thickness)
+        cv2.line(frame, (x2, y2), (x2, y2 - corner_len), roi_color, thickness)
+        
+        # Label for ROI
+        cv2.putText(frame, "Place object here", (x1, y1 - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.6, roi_color, 2)
+        
         overlay = frame.copy()
         cv2.rectangle(overlay, (10, 10), (350, 120), (0, 0, 0), -1)
         frame = cv2.addWeighted(overlay, 0.7, frame, 0.3, 0)
@@ -120,7 +147,15 @@ class WebcamClassifier:
                 break
             
             if not paused:
-                class_id, class_name, confidence = self.classify(frame)
+                # Extract ROI for classification
+                h, w = frame.shape[:2]
+                box_size = 200
+                cx, cy = w // 2, h // 2
+                x1, y1 = cx - box_size // 2, cy - box_size // 2
+                x2, y2 = cx + box_size // 2, cy + box_size // 2
+                roi = frame[y1:y2, x1:x2]
+                
+                class_id, class_name, confidence = self.classify(roi)
                 last_result = (class_id, class_name, confidence)
             else:
                 class_id, class_name, confidence = last_result
